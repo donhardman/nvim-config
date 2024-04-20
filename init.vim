@@ -164,8 +164,7 @@ Plug 'junegunn/vim-easy-align'
 call plug#end()
 
 colorscheme obsidian
-let s:current_dir = fnamemodify(expand('<sfile>'), ':h')
-lua package.path = package.path .. ';./autoload/?.lua'
+
 lua require('init')
 
 " Initialize custom syntax
