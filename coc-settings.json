@@ -1,4 +1,5 @@
 {
+	"codeLens.enable": true,
 	"suggest.noselect": true,
   "languageserver": {
     "intelephense": {

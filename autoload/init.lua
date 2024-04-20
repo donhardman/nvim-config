@@ -3,7 +3,7 @@ local vim = vim
 local nnn = require("nnn")
 nnn.setup({
 	explorer = {
-		cmd = "nnn",
+		cmd = "nnn -G -o",
     width = 24,        -- width of the vertical split
     side = "topleft",  -- or "botright", location of the explorer window
     session = "shared",      -- or "global" / "local" / "shared"
@@ -13,16 +13,15 @@ nnn.setup({
 	picker = {
 		cmd = "nnn -Po",
 		style = { border = "rounded" },
-		session = "shared",
+		session = "shared", -- "global, "local" or "shared"
 		tabs = false,
 	},
 	auto_open = {
-		setup = "explorer", 
-		picker = "explorer",
+		setup = nil
 	},
 	replace_netrw = "picker",
 	mappings = {
-		{ "l", nnn.nvim_open_file },
+		--{ "l", nnn.nvim_open_file },
 	},
 	windownav = {
     left = "<C-h>",
@@ -37,8 +36,9 @@ vim.o.foldlevel = 99 -- Using ufo provider need a large value, feel free to decr
 vim.o.foldlevelstart = 99
 vim.o.foldenable = true
 
-vim.keymap.set('n', 'zR', require('ufo').openAllFolds)
-vim.keymap.set('n', 'zM', require('ufo').closeAllFolds)
+local ufo = require("ufo")
+vim.keymap.set('n', 'zR', ufo.openAllFolds)
+vim.keymap.set('n', 'zM', ufo.closeAllFolds)
 
 require('ufo').setup()
 
@@ -60,4 +60,15 @@ require('spectre').setup({
 		}
 	},
 	is_insert_mode = true
+})
+
+require('codesnap').setup({
+	mac_window_bar = true,
+	-- title = "CodeSnap.nvim",
+	code_font_family = "Fira Code Nerd Mono",
+	watermark_font_family = "Pacifico",
+	watermark = "donhardman.com",
+	bg_theme = "default",
+	breadcrumbs_separator = "/",
+	has_breadcrumbs = false,
 })
