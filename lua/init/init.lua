@@ -186,6 +186,9 @@ require('nvim-treesitter.configs').setup({
 		'scss', 'go', 'vim', 'lua', 'json', 'tsx',
 		'javascript', 'typescript', 'bash', 'regex',
 		'html', 'python', 'toml', 'yaml', 'sql',
+		'markdown', 'make', 'perl', 'graphql', 'gitcommit',
+		'gitignore', 'diff', 'dart', 'csv', 'tmux', 'xml',
+		'swift', 'scala', 'elixir', 'solidity', 'proto',
 	},
 	highlight = {
 		enable = true,

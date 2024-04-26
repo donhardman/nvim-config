@@ -25,8 +25,6 @@ set clipboard=unnamedplus
 tnoremap <C-o> <C-\><C-n>
 
 nnoremap <Esc> :noh<CR>
-nnoremap <Enter> O<Esc>j
-nnoremap <S-Enter> kJ^
 
 " Move between windows
 nnoremap <C-j> <C-w>j
@@ -39,6 +37,7 @@ nnoremap <silent> gd <Plug>(coc-definition)
 nnoremap <silent> gy <Plug>(coc-type-definition)
 nnoremap <silent> gi <Plug>(coc-implementation)
 nnoremap <silent> gr <Plug>(coc-references)
+nnoremap <silent> <C-.> :CocDiagnostics<CR>
 nnoremap <silent> <C-;> <Plug>(coc-codeaction)
 nnoremap <silent> <C-,>  <Plug>(coc-fix-current)
 
@@ -86,8 +85,8 @@ vnoremap ÷ :call nerdcommenter#Comment('v', 'toggle')<CR>
 nnoremap <Space> <Nop>
 
 " Pane control p for panel, s - sidebar, o - open, f - find etc
-nnoremap <Space>ps :NnnExplorer<CR>
-nnoremap <Space>po :NnnPicker<CR>
+nnoremap <Space>ps :NnnExplorer %:h:p<CR>
+nnoremap <Space>po :NnnPicker %:h:p<CR>
 nnoremap <Space>pv :vsplit<CR>
 nnoremap <Space>ph :split<CR>
 nnoremap <Space>pq :q<CR>
@@ -212,6 +211,7 @@ Plug 'mhinz/vim-startify'
 Plug 'lukas-reineke/indent-blankline.nvim'
 "Plug 'junegunn/vim-slash'
 Plug 'airblade/vim-gitgutter'
+Plug 'dstein64/vim-startuptime'
 call plug#end()
 
 lua require('init')
@@ -248,13 +248,21 @@ function! IsFloatingWindow() abort
 	endif
 endfunction
 
+function! MaybeRemapEnterForBuffer()
+	if &modifiable
+		nnoremap <buffer> <Enter> O<Esc>j
+		nnoremap <buffer> <S-Enter> kJ^
+	endif
+endfunction
+
 function! MaybeRemapEscForFloatingWindow()
 	if IsFloatingWindow()
 		tnoremap <buffer> <Esc> <C-\><C-n>:q<CR>
 	endif
 endfunction
 
-autocmd BufEnter * call MaybeRemapEscForFloatingWindow()
+autocmd BufWinEnter * call MaybeRemapEnterForBuffer()
+autocmd BufWinEnter * call MaybeRemapEscForFloatingWindow()
 "augroup nnn_explorer
 "autocmd!
 "autocmd VimEnter * silent! NnnExplorer
