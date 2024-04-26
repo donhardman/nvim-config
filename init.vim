@@ -23,9 +23,10 @@ set clipboard=unnamedplus
 
 " Terminal improvements
 tnoremap <C-o> <C-\><C-n>
+
 nnoremap <Esc> :noh<CR>
 nnoremap <Enter> O<Esc>j
-nnoremap <S-Enter> kJ^ 
+nnoremap <S-Enter> kJ^
 
 " Move between windows
 nnoremap <C-j> <C-w>j
@@ -38,6 +39,7 @@ nnoremap <silent> gd <Plug>(coc-definition)
 nnoremap <silent> gy <Plug>(coc-type-definition)
 nnoremap <silent> gi <Plug>(coc-implementation)
 nnoremap <silent> gr <Plug>(coc-references)
+nnoremap <silent> <C-;> <Plug>(coc-codeaction)
 nnoremap <silent> <C-,>  <Plug>(coc-fix-current)
 
 " Use `[g` and `]g` to navigate diagnostics
@@ -139,6 +141,7 @@ cnoremap <M-f> <S-Right>
 
 " Custom commands
 command! -nargs=1 Duplicate execute 'write ' . expand('%:h') . '/' . <q-args> | execute 'edit ' . expand('%:h') . '/' . <q-args>
+command! -nargs=0 ImportClass :call CocAction('runCommand', 'editor.action.organizeImport')
 
 nnoremap <silent> gt :<C-U>call <SID>JumpToSequencePrompt()<CR>
 
@@ -166,7 +169,7 @@ let g:NERDCreateDefaultMappings = 0
 let g:gitgutter_map_keys = 0
 let g:gitgutter_signs = 1
 let g:gitgutter_grep = 'rg'
-let g:gitgutter_highlight_linenrs = 1 
+let g:gitgutter_highlight_linenrs = 1
 
 call plug#begin('~/.config/nvim/plugged')
 Plug 'donhardman/vim-obsidian-theme'
@@ -178,6 +181,8 @@ Plug 'romgrk/barbar.nvim'
 
 " autocomplete and LSP
 Plug 'neoclide/coc.nvim', { 'branch': 'release' }
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'danymat/neogen'
 
 " file manager
 Plug 'luukvbaal/nnn.nvim'
@@ -186,7 +191,7 @@ Plug 'luukvbaal/nnn.nvim'
 
 " Searching panel
 Plug 'nvim-lua/plenary.nvim'
-Plug 'nvim-pack/nvim-spectre', { 'do': './build.sh' }
+Plug 'donhardman/nvim-spectre', { 'do': './build.sh' }
 
 " Statusline
 "Plug 'donhardman/eleline.vim'
@@ -207,12 +212,11 @@ Plug 'mhinz/vim-startify'
 Plug 'lukas-reineke/indent-blankline.nvim'
 "Plug 'junegunn/vim-slash'
 Plug 'airblade/vim-gitgutter'
-
 call plug#end()
 
-colorscheme obsidian
-
 lua require('init')
+
+colorscheme obsidian
 
 " Initialize custom syntax
 runtime! syntax/rec.vim
@@ -237,7 +241,7 @@ endfunction
 " Check if the current window is a floating window
 function! IsFloatingWindow() abort
 	let l:win_config = nvim_win_get_config(0)
-	if l:win_config['relative'] != '' 
+	if l:win_config['relative'] != ''
 		return 1
 	else
 		return 0

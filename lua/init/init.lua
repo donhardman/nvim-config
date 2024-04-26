@@ -89,7 +89,7 @@ require('lualine').setup({
 local nnn = require("nnn")
 nnn.setup({
 	explorer = {
-		cmd = "nnn -G -o",
+		cmd = "NO_COLOR=1 nnn -G -o",
     width = 24,        -- width of the vertical split
     side = "topleft",  -- or "botright", location of the explorer window
     session = "shared",      -- or "global" / "local" / "shared"
@@ -144,11 +144,15 @@ end, { noremap = true })
 
 require('spectre').setup({
 	default = {
+		find = {
+			cmd = "rg",
+		},
 		replace = {
 			cmd = "oxi"
 		}
 	},
-	is_insert_mode = true
+	color_devicons = true,
+	is_insert_mode = true,
 })
 
 require('codesnap').setup({
@@ -171,5 +175,19 @@ require('ibl').setup({
 		show_exact_scope = false,
 		show_start = true,
 		show_end = true,
+	},
+})
+
+require('neogen').setup()
+
+require('nvim-treesitter.configs').setup({
+	ensure_installed = {
+		'php', 'phpdoc', 'rust', 'c', 'cpp', 'css',
+		'scss', 'go', 'vim', 'lua', 'json', 'tsx',
+		'javascript', 'typescript', 'bash', 'regex',
+		'html', 'python', 'toml', 'yaml', 'sql',
+	},
+	highlight = {
+		enable = true,
 	},
 })
