@@ -1,4 +1,3 @@
-"! Set line numbers
 set number
 set relativenumber
 set nowrap
@@ -95,6 +94,9 @@ nnoremap <C-/> :Spectre<CR>
 nnoremap <Space>pp :BufferPick<CR>
 nnoremap <Space>pz :call WinZoomToggle()<CR>
 
+nnoremap <leader>a :Assist<space>
+vnoremap <leader>a :Assist<space>
+
 " Buffer shortcuts
 nnoremap <C-w> :call SmartClose()<CR>
 vnoremap <C-w> :call SmartClose()<CR>
@@ -182,6 +184,7 @@ Plug 'romgrk/barbar.nvim'
 Plug 'neoclide/coc.nvim', { 'branch': 'release' }
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'danymat/neogen'
+Plug 'donhardman/assist.nvim'
 
 " file manager
 Plug 'luukvbaal/nnn.nvim'
@@ -280,4 +283,10 @@ function! JumpToSequence(sequence)
 		echohl None
 	endif
 endfunction
+
+" Set indentexpr to fix issue with default indentaiont and use treesitter
+augroup SetIndentExpr
+	autocmd!
+	autocmd FileType * silent! setlocal indentexpr=
+augroup END
 
