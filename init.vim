@@ -284,9 +284,3 @@ function! JumpToSequence(sequence)
 	endif
 endfunction
 
-" Set indentexpr to fix issue with default indentaiont and use treesitter
-augroup SetIndentExpr
-	autocmd!
-	autocmd FileType * silent! setlocal indentexpr=
-augroup END
-
