@@ -25,6 +25,12 @@ tnoremap <C-o> <C-\><C-n>
 
 nnoremap <Esc> :noh<CR>
 
+" Move in insert mode
+inoremap ∆ <Down>
+inoremap ˚ <Up>
+inoremap ˙ <Left>
+inoremap ¬ <Right>
+
 " Move between windows
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
@@ -32,18 +38,20 @@ nnoremap <C-h> <C-w>h
 nnoremap <C-l> <C-w>l
 
 " Remap keys for gotos
-nnoremap <silent> gd <Plug>(coc-definition)
-nnoremap <silent> gy <Plug>(coc-type-definition)
-nnoremap <silent> gi <Plug>(coc-implementation)
-nnoremap <silent> gr <Plug>(coc-references)
+nnoremap <silent> gd :call CocActionAsync('jumpDefinition')<CR>
+nnoremap <silent> gD :call CocActionAsync('jumpDeclaration')<CR>
+nnoremap <silent> gy :call CocActionAsync('jumpTypeDefinition')<CR>
+nnoremap <silent> gi :call CocActionAsync('jumpImplementation')<CR>
+nnoremap <silent> gr :call CocActionAsync('jumpReferences')<CR>
 nnoremap <silent> <C-.> :CocDiagnostics<CR>
-nnoremap <silent> <C-;> <Plug>(coc-codeaction)
-nnoremap <silent> <C-,>  <Plug>(coc-fix-current)
+nnoremap <silent> <C-;> :call CocActionAsync('codeAction', '')<CR>
+nnoremap <silent> <C-,> :call CocActionAsync('doQuickFix')<CR>
+nnoremap <silent> cir :call CocActionAsync('rename')<CR>
 
 " Use `[g` and `]g` to navigate diagnostics
 " Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
-nmap <silent> [g <Plug>(coc-diagnostic-prev)
-nmap <silent> ]g <Plug>(coc-diagnostic-next)
+nmap <silent> [g :call  CocActionAsync('diagnosticPrevious')
+nmap <silent> ]g :call  CocActionAsync('diagnosticNext')
 
 autocmd CursorHold * silent call CocActionAsync('highlight')
 
@@ -90,6 +98,7 @@ nnoremap <Space>pv :vsplit<CR>
 nnoremap <Space>ph :split<CR>
 nnoremap <Space>pq :q<CR>
 nnoremap <Space>pf :Spectre<CR>
+nnoremap <Space>pd :CocDiagnostics<CR>
 nnoremap <C-/> :Spectre<CR>
 nnoremap <Space>pp :BufferPick<CR>
 nnoremap <Space>pz :call WinZoomToggle()<CR>
@@ -144,15 +153,47 @@ cnoremap <M-f> <S-Right>
 command! -nargs=1 Duplicate execute 'write ' . expand('%:h') . '/' . <q-args> | execute 'edit ' . expand('%:h') . '/' . <q-args>
 command! -nargs=0 ImportClass :call CocAction('runCommand', 'editor.action.organizeImport')
 
-nnoremap <silent> gt :<C-U>call <SID>JumpToSequencePrompt()<CR>
-
-function! s:JumpToSequencePrompt() abort
-	let l:sequence = input('Jump to sequence: ')
+" Improve jumping
+function! s:JumpToSequencePrompt(forward) abort
+	let l:sequence = input("Jump to sequence " . (a:forward ? "forward" : "backward") . ": ")
 	if !empty(l:sequence)
-		call JumpToSequence(l:sequence)
+		call JumpToSequence(l:sequence, a:forward)
 	endif
 endfunction
 
+function! s:FindSequencePrompt(forward) abort
+	let l:sequence = input("Sequence to find " . (a:forward ? "forward" : "backward") . ": ")
+	if empty(l:sequence)
+		echohl WarningMsg
+		echo "No sequence provided."
+		echohl None
+		return
+	endif
+
+	" Save the current cursor position
+	let l:curpos = getcurpos()
+
+	" Search for the sequence
+	let l:flags = 'W'  " Search whole words
+	if a:forward
+		let l:result = search(l:sequence, 'c' . l:flags)
+	else
+		let l:result = search(l:sequence, 'b' . l:flags)
+	endif
+
+	" If the search fails, restore the cursor position
+	if l:result == 0
+		call setpos('.', l:curpos)
+		echohl WarningMsg
+		echo "Sequence not found."
+		echohl None
+	endif
+endfunction
+
+nnoremap <silent> gt :<C-U>call <SID>JumpToSequencePrompt(v:true)<CR>
+nnoremap <silent> gT :<C-U>call <SID>JumpToSequencePrompt(v:false)<CR>
+nnoremap <silent> gf :<C-U>call <SID>FindSequencePrompt(v:true)<CR>
+nnoremap <silent> gF :<C-U>call <SID>FindSequencePrompt(v:false)<CR>
 
 let g:local_history_path = $HOME . '/.local-history'
 let g:local_history_new_change_delay = 60
@@ -254,7 +295,7 @@ endfunction
 function! MaybeRemapEnterForBuffer()
 	if &modifiable
 		nnoremap <buffer> <Enter> O<Esc>j
-		nnoremap <buffer> <S-Enter> kJ^
+		nnoremap <buffer> <BS> kJ^
 	endif
 endfunction
 
@@ -271,10 +312,16 @@ autocmd BufWinEnter * call MaybeRemapEscForFloatingWindow()
 "autocmd VimEnter * silent! NnnExplorer
 "augroup END
 
-" Function to handle :JumpToSequence command
-function! JumpToSequence(sequence)
+function! JumpToSequence(sequence, forward)
+	if a:forward == ''
+		let a:forward = v:true
+	endif
 	let l:line = getline('.')
-	let l:pos = match(l:line, a:sequence)
+	if a:forward
+		let l:pos = match(l:line, a:sequence)
+	else
+		let l:pos = matchend(l:line, a:sequence)
+	endif
 	if l:pos != -1
 		call cursor(line('.'), l:pos + 1)
 	else
