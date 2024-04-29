@@ -22,6 +22,9 @@
 				"intelephense.telemetry.enabled": false,
 				"intelephense.phpdoc.useFullyQualifiedNames": true,
 				"intelephense.phpdoc.textFormat": "text",
+				"intelephense.environment.phpVersion": "8.3.4",
+				"intelephense.client.disableInlayHint": false,
+				"intelephense.inlineParameters.showDollarSign": false,
 				"intelephense.stubs": [
 					"aerospike",
 					"amqp",
