@@ -1,3 +1,5 @@
+let s:init_vim_path = expand('<sfile>:p:h')
+
 set number
 set relativenumber
 set nowrap
@@ -23,7 +25,7 @@ set clipboard=unnamedplus
 " Terminal improvements
 tnoremap <C-o> <C-\><C-n>
 
-nnoremap <Esc> :noh<CR>
+autocmd BufWinEnter * if &buftype == '' | nnoremap <buffer> <Esc> :noh<CR> | endif
 
 " Move in insert mode
 inoremap ∆ <Down>
@@ -37,23 +39,29 @@ nnoremap <C-k> <C-w>k
 nnoremap <C-h> <C-w>h
 nnoremap <C-l> <C-w>l
 
-" Remap keys for gotos
-nnoremap <silent> gd :call CocActionAsync('jumpDefinition')<CR>
-nnoremap <silent> gD :call CocActionAsync('jumpDeclaration')<CR>
-nnoremap <silent> gy :call CocActionAsync('jumpTypeDefinition')<CR>
-nnoremap <silent> gi :call CocActionAsync('jumpImplementation')<CR>
-nnoremap <silent> gr :call CocActionAsync('jumpReferences')<CR>
-nnoremap <silent> <C-.> :CocDiagnostics<CR>
-nnoremap <silent> <C-;> :call CocActionAsync('codeAction', '')<CR>
-nnoremap <silent> <C-,> :call CocActionAsync('doQuickFix')<CR>
-nnoremap <silent> cir :call CocActionAsync('rename')<CR>
+" Show diagnostics
+nnoremap <silent> <C-.> :lua vim.diagnostic.open_float()<CR>
 
-" Use `[g` and `]g` to navigate diagnostics
-" Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
-nmap <silent> [g :call  CocActionAsync('diagnosticPrevious')
-nmap <silent> ]g :call  CocActionAsync('diagnosticNext')
+" Code actions and quick fixes
+nnoremap <silent> <C-;> :lua vim.lsp.buf.code_action()<CR>
+nnoremap <silent> <C-,> :lua vim.lsp.buf.code_action({ apply = true })<CR>
 
-autocmd CursorHold * silent call CocActionAsync('highlight')
+" Rename symbol
+nnoremap <silent> cir :lua vim.lsp.buf.rename()<CR>
+
+" Go to definition, declaration, type definition, implementation, and references
+nnoremap <silent> gd :lua vim.lsp.buf.definition()<CR>
+nnoremap <silent> gD :lua vim.lsp.buf.declaration()<CR>
+nnoremap <silent> gy :lua vim.lsp.buf.type_definition()<CR>
+nnoremap <silent> gi :lua vim.lsp.buf.implementation()<CR>
+nnoremap <silent> gr :lua vim.lsp.buf.references()<CR>
+
+" Navigate diagnostics
+nnoremap <silent> gN :lua vim.diagnostic.goto_prev()<CR>
+nnoremap <silent> gn :lua vim.diagnostic.goto_next()<CR>
+" Configure GitGutter
+nnoremap gh <Plug>(GitGutterNextHunk)
+nnoremap gH <Plug>(GitGutterPrevHunk)
 
 " Use K to either doHover or show documentation in preview window
 nnoremap <silent> K :call <SID>show_documentation()<CR>
@@ -62,14 +70,9 @@ function! s:show_documentation()
 	if (index(['vim','help'], &filetype) >= 0)
 		execute 'h '.expand('<cword>')
 	else
-		"call CocActionAsync('showSignatureHelp')
-		call CocActionAsync('doHover')
+		lua vim.lsp.buf.hover()
 	endif
 endfunction
-
-" Configure GitGutter
-nmap ]h <Plug>(GitGutterNextHunk)
-nmap [h <Plug>(GitGutterPrevHunk)
 
 " Keep visual mode on ident fixing
 vnoremap > >gv
@@ -91,15 +94,34 @@ vnoremap ÷ :call nerdcommenter#Comment('v', 'toggle')<CR>
 " Disable space in normal mode
 nnoremap <Space> <Nop>
 
+function! WinZoomToggle() abort
+	if ! exists('w:WinZoomIsZoomed')
+		let w:WinZoomIsZoomed = 0
+	endif
+	if w:WinZoomIsZoomed == 0
+		let w:WinZoomOldWidth = winwidth(0)
+		let w:WinZoomOldHeight = winheight(0)
+		wincmd _
+		wincmd |
+		let w:WinZoomIsZoomed = 1
+	elseif w:WinZoomIsZoomed == 1
+		execute "resize " . w:WinZoomOldHeight
+		execute "vertical resize " . w:WinZoomOldWidth
+		let w:WinZoomIsZoomed = 0
+	endif
+endfunction
+
 " Pane control p for panel, s - sidebar, o - open, f - find etc
-nnoremap <Space>ps :NnnExplorer %:h:p<CR>
-nnoremap <Space>po :NnnPicker %:h:p<CR>
+nnoremap <Space>pe :NnnExplorer <C-r>=getcwd()<CR><CR>
+nnoremap <Space>po :NnnPicker <C-r>=getcwd()<CR><CR>
+nnoremap <SPace>pc :NnnPicker <C-r>=expand('%:h:p')<CR><CR>
 nnoremap <Space>pv :vsplit<CR>
 nnoremap <Space>ph :split<CR>
 nnoremap <Space>pq :q<CR>
+nnoremap <Space>pQ :qa<CR>
 nnoremap <Space>pf :Spectre<CR>
-nnoremap <Space>pd :CocDiagnostics<CR>
 nnoremap <C-/> :Spectre<CR>
+nnoremap <Space>ps :w<CR>
 nnoremap <Space>pp :BufferPick<CR>
 nnoremap <Space>pz :call WinZoomToggle()<CR>
 
@@ -129,16 +151,6 @@ nnoremap <S-e> ea
 nmap ga <Plug>(EasyAlign)
 xmap ga <Plug>(EasyAlign)
 
-" Configure autocomplete smart tab
-inoremap <silent><expr> <S-Tab>
-			\ pumvisible() ? "\<C-p>" :
-			\ CheckBackspace() ? "\<S-Tab>" :
-			\ coc#refresh()
-inoremap <silent><expr> <Tab>
-			\ pumvisible() ? "\<C-n>" :
-			\ CheckBackspace() ? "\<Tab>" :
-			\ coc#refresh()
-
 " Bash-like keybindings for command line
 cnoremap <C-a> <Home>
 cnoremap <C-e> <End>
@@ -151,7 +163,6 @@ cnoremap <M-f> <S-Right>
 
 " Custom commands
 command! -nargs=1 Duplicate execute 'write ' . expand('%:h') . '/' . <q-args> | execute 'edit ' . expand('%:h') . '/' . <q-args>
-command! -nargs=0 ImportClass :call CocAction('runCommand', 'editor.action.organizeImport')
 
 " Improve jumping
 function! s:JumpToSequencePrompt(forward) abort
@@ -192,8 +203,8 @@ endfunction
 
 nnoremap <silent> gt :<C-U>call <SID>JumpToSequencePrompt(v:true)<CR>
 nnoremap <silent> gT :<C-U>call <SID>JumpToSequencePrompt(v:false)<CR>
-nnoremap <silent> gf :<C-U>call <SID>FindSequencePrompt(v:true)<CR>
-nnoremap <silent> gF :<C-U>call <SID>FindSequencePrompt(v:false)<CR>
+nnoremap <silent> g/ :<C-U>call <SID>FindSequencePrompt(v:true)<CR>
+nnoremap <silent> g? :<C-U>call <SID>FindSequencePrompt(v:false)<CR>
 
 let g:local_history_path = $HOME . '/.local-history'
 let g:local_history_new_change_delay = 60
@@ -203,8 +214,6 @@ let g:airline_powerline_fonts = 1
 
 let g:python_host_prog = '~/.config/nvim-py/bin/python3'
 let g:python3_host_prog = '~/.config/nvim-py3/bin/python3'
-let g:coc_config_home = '~/.config/nvim'
-let g:coc_data_home = '~/.config/nvim/coc'
 let g:airline_gui_colors = 1
 let g:airline_powerline_fonts = 1
 let g:NERDCreateDefaultMappings = 0
@@ -222,8 +231,17 @@ Plug 'lewis6991/gitsigns.nvim'
 Plug 'romgrk/barbar.nvim'
 
 " autocomplete and LSP
-Plug 'neoclide/coc.nvim', { 'branch': 'release' }
+"Plug 'nvimdev/lspsaga.nvim'
+"Plug 'Bekaboo/dropbar.nvim'
+Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'nvim-treesitter/nvim-treesitter-context'
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/cmp-path'
+Plug 'hrsh7th/cmp-cmdline'
+Plug 'hrsh7th/nvim-cmp'
+Plug 'tzachar/cmp-tabnine', { 'do': './install.sh' }
 Plug 'danymat/neogen'
 Plug 'donhardman/assist.nvim'
 
@@ -307,10 +325,6 @@ endfunction
 
 autocmd BufWinEnter * call MaybeRemapEnterForBuffer()
 autocmd BufWinEnter * call MaybeRemapEscForFloatingWindow()
-"augroup nnn_explorer
-"autocmd!
-"autocmd VimEnter * silent! NnnExplorer
-"augroup END
 
 function! JumpToSequence(sequence, forward)
 	if a:forward == ''
