@@ -1,5 +1,4 @@
 local vim = vim
-
 require('lualine').setup({
 	options = {
 		icons_enabled = true,
@@ -198,18 +197,18 @@ require('nvim-treesitter.configs').setup({
 	},
 })
 require('treesitter-context').setup{
-  enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
-  max_lines = 0, -- How many lines the window should span. Values <= 0 mean no limit.
-  min_window_height = 0, -- Minimum editor window height to enable context. Values <= 0 mean no limit.
-  line_numbers = true,
-  multiline_threshold = 20, -- Maximum number of lines to show for a single context
-  trim_scope = 'outer', -- Which context lines to discard if `max_lines` is exceeded. Choices: 'inner', 'outer'
-  mode = 'cursor',  -- Line used to calculate context. Choices: 'cursor', 'topline'
-  -- Separator between context and content. Should be a single character string, like '-'.
-  -- When separator is set, the context will only show up when there are at least 2 lines above cursorline.
-  separator = nil,
-  zindex = 20, -- The Z-index of the context window
-  on_attach = nil, -- (fun(buf: integer): boolean) return false to disable attaching
+	enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
+	max_lines = 0, -- How many lines the window should span. Values <= 0 mean no limit.
+	min_window_height = 0, -- Minimum editor window height to enable context. Values <= 0 mean no limit.
+	line_numbers = true,
+	multiline_threshold = 20, -- Maximum number of lines to show for a single context
+	trim_scope = 'outer', -- Which context lines to discard if `max_lines` is exceeded. Choices: 'inner', 'outer'
+	mode = 'cursor',  -- Line used to calculate context. Choices: 'cursor', 'topline'
+	-- Separator between context and content. Should be a single character string, like '-'.
+	-- When separator is set, the context will only show up when there are at least 2 lines above cursorline.
+	separator = nil,
+	zindex = 20, -- The Z-index of the context window
+	on_attach = nil, -- (fun(buf: integer): boolean) return false to disable attaching
 }
 require('assist').setup()
 
@@ -218,30 +217,30 @@ local timer = nil
 local cmp = require("cmp")
 
 function _G.setAutoCompleteDelay(delay)
-  completionDelay = delay
+	completionDelay = delay
 end
 
 function _G.getAutoCompleteDelay()
-  return completionDelay
+	return completionDelay
 end
 
 vim.api.nvim_create_autocmd({ "TextChangedI", "CmdlineChanged" }, {
-  pattern = "*",
-  callback = function()
-    if timer then
-      vim.loop.timer_stop(timer)
-      timer = nil
-    end
+	pattern = "*",
+	callback = function()
+		if timer then
+			vim.loop.timer_stop(timer)
+			timer = nil
+		end
 
-    timer = vim.loop.new_timer()
-    timer:start(
-      _G.getAutoCompleteDelay(),
-      0,
-      vim.schedule_wrap(function()
-        cmp.complete({ reason = cmp.ContextReason.Auto })
-      end)
-    )
-  end,
+		timer = vim.loop.new_timer()
+		timer:start(
+			_G.getAutoCompleteDelay(),
+			0,
+			vim.schedule_wrap(function()
+				cmp.complete({ reason = cmp.ContextReason.Auto })
+			end)
+		)
+	end,
 })
 
 cmp.setup({
@@ -250,12 +249,12 @@ cmp.setup({
 	},
 	snippet = {
 		expand = function(args)
-			 vim.snippet.expand(args.body) -- For native neovim snippets (Neovim v0.10+)
+			vim.snippet.expand(args.body) -- For native neovim snippets (Neovim v0.10+)
 		end,
 	},
 	window = {
 		-- completion = cmp.config.window.bordered(),
-		-- documentation = cmp.config.window.bordered(),
+		documentation = cmp.config.window.bordered(),
 	},
 	mapping = cmp.mapping.preset.insert({
 		['<C-b>'] = cmp.mapping.scroll_docs(-4),
@@ -281,8 +280,8 @@ cmp.setup({
 	sources = cmp.config.sources({
 		{ name = 'cmp_tabnine' },
 		{ name = 'nvim_lsp' },
-	}, {
-		{ name = 'buffer' },
+		}, {
+			{ name = 'buffer' },
 	}),
 	experimental = {
 		ghost_text = true, -- Show ghost text for completion candidates
@@ -296,11 +295,13 @@ cmp.setup({
 
 -- Set configuration for specific filetype.
 cmp.setup.filetype('gitcommit', {
-	sources = cmp.config.sources({
-		{ name = 'git' }, -- You can specify the `git` source if [you were installed it](https://github.com/petertriho/cmp-git).
-	}, {
-		{ name = 'buffer' },
-	})
+	sources = cmp.config.sources(
+		{
+			{ name = 'git' }, -- You can specify the `git` source if [you were installed it](https://github.com/petertriho/cmp-git).
+		}, {
+			{ name = 'buffer' },
+		}
+	)
 })
 
 -- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
@@ -314,11 +315,13 @@ cmp.setup.cmdline({ '/', '?' }, {
 -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
 cmp.setup.cmdline(':', {
 	mapping = cmp.mapping.preset.cmdline(),
-	sources = cmp.config.sources({
-		{ name = 'path' }
-	}, {
-		{ name = 'cmdline' }
-	}),
+	sources = cmp.config.sources(
+		{
+			{ name = 'path' }
+		}, {
+			{ name = 'cmdline' }
+		}
+	),
 	matching = { disallow_symbol_nonprefix_matching = false }
 })
 
@@ -655,9 +658,12 @@ require('lspconfig').grammarly.setup({
 	capabilities = capabilities
 })
 
-require('lspconfig').grammarly.setup({
+--require('lspconfig').grammarly.setup({
+	--capabilities = capabilities
+--})
+
+require('lspconfig').typos_lsp.setup({
 	capabilities = capabilities
 })
-
 --require('lspsaga').setup({})
 
