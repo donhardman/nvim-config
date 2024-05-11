@@ -1,3 +1,4 @@
+
 local vim = vim
 require('lualine').setup({
 	options = {
@@ -119,20 +120,15 @@ nnn.setup({
 	offset = false
 })
 
-vim.o.foldcolumn = '1' -- '0' is not bad
-vim.o.foldlevel = 99 -- Using ufo provider need a large value, feel free to decrease the value
-vim.o.foldlevelstart = 99
-vim.o.foldenable = true
+--local ufo = require("ufo")
+--vim.keymap.set('n', 'zR', ufo.openAllFolds)
+--vim.keymap.set('n', 'zM', ufo.closeAllFolds)
 
-local ufo = require("ufo")
-vim.keymap.set('n', 'zR', ufo.openAllFolds)
-vim.keymap.set('n', 'zM', ufo.closeAllFolds)
-
-require('ufo').setup()
+--ufo.setup()
 
 require('nvim-highlight-colors').setup({})
 -- This code executes on server in case of remote UI open
--- and let us to keep server runing even when we close the nvim
+-- and let us to keep server running even when we close the nvim
 vim.keymap.set('n', '<leader>q', function()
 	for _, ui in pairs(vim.api.nvim_list_uis()) do
 		if ui.chan and not ui.stdout_tty then
@@ -176,7 +172,11 @@ require('ibl').setup({
 		show_end = true,
 	},
 })
-
+require('auto-save').setup({
+	enabled = true,
+	trigger_events = {"InsertLeave", "TextChanged"},
+	debounce_delay = 1000,
+})
 require('neogen').setup()
 
 require('nvim-treesitter.configs').setup({
@@ -210,6 +210,10 @@ require('treesitter-context').setup{
 	zindex = 20, -- The Z-index of the context window
 	on_attach = nil, -- (fun(buf: integer): boolean) return false to disable attaching
 }
+
+require('outline').setup({
+})
+
 require('assist').setup()
 
 local completionDelay = 150
@@ -653,14 +657,6 @@ require('lspconfig').html.setup({
 require('lspconfig').stylelint_lsp.setup({
 	capabilities = capabilities
 })
-
-require('lspconfig').grammarly.setup({
-	capabilities = capabilities
-})
-
---require('lspconfig').grammarly.setup({
-	--capabilities = capabilities
---})
 
 require('lspconfig').typos_lsp.setup({
 	capabilities = capabilities

@@ -13,6 +13,15 @@ set smarttab
 set noexpandtab
 set shiftwidth=2
 set tabstop=2
+set hidden
+set nocompatible
+set showtabline=0
+set foldmethod=expr
+set foldexpr=nvim_treesitter#foldexpr()
+set foldcolumn=1
+set foldlevel=99
+set foldlevelstart=99
+set foldenable
 set backup
 set backupdir=~/.config/nvim/cache/backup
 set nowritebackup
@@ -32,7 +41,6 @@ inoremap ∆ <Down>
 inoremap ˚ <Up>
 inoremap ˙ <Left>
 inoremap ¬ <Right>
-
 " Move between windows
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
@@ -114,27 +122,37 @@ endfunction
 " Pane control p for panel, s - sidebar, o - open, f - find etc
 nnoremap <Space>pe :NnnExplorer <C-r>=getcwd()<CR><CR>
 nnoremap <Space>po :NnnPicker <C-r>=getcwd()<CR><CR>
-nnoremap <SPace>pc :NnnPicker <C-r>=expand('%:h:p')<CR><CR>
+nnoremap <Space>pO :NnnPicker <C-r>=expand('%:h:p')<CR><CR>
 nnoremap <Space>pv :vsplit<CR>
+nnoremap <Space>pV :Gvdiffsplit<CR>
 nnoremap <Space>ph :split<CR>
+nnoremap <Space>pH :Ghdiffsplit<CR>
 nnoremap <Space>pq :q<CR>
 nnoremap <Space>pQ :qa<CR>
+nnoremap <Space>pl :BLines<CR>
+nnoremap <Space>pL :Lines<CR>
 nnoremap <Space>pf :Spectre<CR>
+nnoremap <Space>pF :RG<CR>
 nnoremap <C-/> :Spectre<CR>
 nnoremap <Space>ps :w<CR>
-nnoremap <Space>pp :BufferPick<CR>
+nnoremap <Space>pS :wa<CR>
+nnoremap <Space>pj :Jumps<CR>
+nnoremap <Space>pJ :Marks<CR>
+nnoremap <Space>pb :Buffers<CR>
 nnoremap <Space>pz :call WinZoomToggle()<CR>
+nnoremap <Space>pt :Outline<CR>
 
 nnoremap <leader>a :Assist<space>
 vnoremap <leader>a :Assist<space>
+vnoremap <silent> <Space>ap :Assist Proofread the text, keep all original marks as is without altering, do not change other things than text, keep all unrelated symbols as is<CR>
 
 " Buffer shortcuts
 nnoremap <C-w> :call SmartClose()<CR>
 vnoremap <C-w> :call SmartClose()<CR>
 inoremap <C-w> <Esc>:call SmartClose()<CR>
 
-nnoremap <Tab> :BufferNext<CR>
-nnoremap <S-Tab> :BufferPrevious<CR>
+nnoremap <Tab> :bnext<CR>
+nnoremap <S-Tab> :bprev<CR>
 nnoremap <C-t> :enew<CR>
 nnoremap <C-S-t> :BufferRestore<CR>
 " π = <M-p>
@@ -221,6 +239,8 @@ let g:gitgutter_map_keys = 0
 let g:gitgutter_signs = 1
 let g:gitgutter_grep = 'rg'
 let g:gitgutter_highlight_linenrs = 1
+let g:neoformat_try_node_exe = 1
+let g:CtrlSpaceDefaultMappingKey = "<C-space>"
 
 call plug#begin('~/.config/nvim/plugged')
 Plug 'donhardman/vim-obsidian-theme'
@@ -228,14 +248,13 @@ Plug 'donhardman/vim-obsidian-theme'
 " Tabs
 Plug 'nvim-tree/nvim-web-devicons'
 Plug 'lewis6991/gitsigns.nvim'
-Plug 'romgrk/barbar.nvim'
+Plug 'Pocco81/auto-save.nvim'
 
 " autocomplete and LSP
-"Plug 'nvimdev/lspsaga.nvim'
-"Plug 'Bekaboo/dropbar.nvim'
 Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'nvim-treesitter/nvim-treesitter-context'
+Plug 'hedyhli/outline.nvim'
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-path'
@@ -243,12 +262,14 @@ Plug 'hrsh7th/cmp-cmdline'
 Plug 'hrsh7th/nvim-cmp'
 Plug 'tzachar/cmp-tabnine', { 'do': './install.sh' }
 Plug 'danymat/neogen'
+Plug 'sbdchd/neoformat'
 Plug 'donhardman/assist.nvim'
 
 " file manager
 Plug 'luukvbaal/nnn.nvim'
-"Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-"Plug 'ctrlpvim/ctrlp.vim'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+Plug 'tpope/vim-fugitive'
 
 " Searching panel
 Plug 'nvim-lua/plenary.nvim'
@@ -260,9 +281,10 @@ Plug 'donhardman/lualine.nvim'
 
 " Folding/unfolding blocks
 Plug 'kevinhwang91/promise-async'
-Plug 'kevinhwang91/nvim-ufo'
+"Plug 'kevinhwang91/nvim-ufo'
 
 " Extra
+Plug 'itchyny/vim-cursorword'
 Plug 'brenoprata10/nvim-highlight-colors'
 Plug 'preservim/nerdcommenter'
 Plug 'dinhhuy258/vim-local-history', {'branch': 'master', 'do': ':UpdateRemotePlugins'}
