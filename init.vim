@@ -390,7 +390,13 @@ function! s:OpenReadmeIfExists()
 		return
 	endif
 
-	let l:dir = argv(0)
+	let l:path = argv(0)
+	if filereadable(l:path)
+		execute 'edit ' . fnameescape(l:path)
+		return
+	endif
+
+	let l:dir = l:path
 	let l:readme_path = l:dir . '/README.md'
 	if filereadable(l:readme_path)
 		execute 'bp|bd#'
