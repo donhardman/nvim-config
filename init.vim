@@ -22,6 +22,10 @@ set foldcolumn=1
 set foldlevel=99
 set foldlevelstart=99
 set foldenable
+set title
+set titlelen=0
+set titlestring=%{expand(\"%:p\")}
+let &titlestring="nvim " . &titlestring
 set backup
 set backupdir=~/.config/nvim/cache/backup
 set nowritebackup
@@ -30,7 +34,6 @@ set termguicolors
 set guifont=FiraCode\ Nerd\ Font\ Mono:h14
 set encoding=utf-8
 set clipboard=unnamedplus
-
 " Terminal improvements
 tnoremap <C-o> <C-\><C-n>
 
@@ -63,10 +66,13 @@ nnoremap <silent> gD :lua vim.lsp.buf.declaration()<CR>
 nnoremap <silent> gy :lua vim.lsp.buf.type_definition()<CR>
 nnoremap <silent> gi :lua vim.lsp.buf.implementation()<CR>
 nnoremap <silent> gr :lua vim.lsp.buf.references()<CR>
+nnoremap <silent> gj <C-i>
+nnoremap <silent> gJ <C-o>
 
 " Navigate diagnostics
 nnoremap <silent> gN :lua vim.diagnostic.goto_prev()<CR>
 nnoremap <silent> gn :lua vim.diagnostic.goto_next()<CR>
+
 " Configure GitGutter
 nnoremap gh <Plug>(GitGutterNextHunk)
 nnoremap gH <Plug>(GitGutterPrevHunk)
@@ -120,9 +126,13 @@ function! WinZoomToggle() abort
 endfunction
 
 " Pane control p for panel, s - sidebar, o - open, f - find etc
-nnoremap <Space>pe :NnnExplorer <C-r>=getcwd()<CR><CR>
-nnoremap <Space>po :NnnPicker <C-r>=getcwd()<CR><CR>
-nnoremap <Space>pO :NnnPicker <C-r>=expand('%:h:p')<CR><CR>
+"nnoremap <Space>pe :NnnExplorer <C-r>=getcwd()<CR><CR>
+nnoremap <Space>pe :lua require("yazi").yazi(nil, vim.fn.getcwd())<CR>
+nnoremap <Space>pE :lua require("yazi").yazi(nil, vim.api.nvim_buf_get_name(0))<CR>
+"nnoremap <Space>po :NnnPicker <C-r>=getcwd()<CR><CR>
+"nnoremap <Space>pO :NnnPicker <C-r>=expand('%:h:p')<CR><CR>
+nnoremap <Space>po :Files <C-r>=getcwd()<CR><CR>
+nnoremap <Space>pO :Files <C-r>=expand('%:h:p')<CR><CR>
 nnoremap <Space>pv :vsplit<CR>
 nnoremap <Space>pV :Gvdiffsplit<CR>
 nnoremap <Space>ph :split<CR>
@@ -151,12 +161,9 @@ nnoremap <C-w> :call SmartClose()<CR>
 vnoremap <C-w> :call SmartClose()<CR>
 inoremap <C-w> <Esc>:call SmartClose()<CR>
 
-nnoremap <Tab> :bnext<CR>
-nnoremap <S-Tab> :bprev<CR>
+nnoremap <C-n> :bnext<CR>
+nnoremap <C-p> :bprev<CR>
 nnoremap <C-t> :enew<CR>
-nnoremap <C-S-t> :BufferRestore<CR>
-" π = <M-p>
-nnoremap π :BufferPick<CR>
 
 " Editor improvements
 "vnoremap <C-c> "+y
@@ -229,7 +236,8 @@ let g:local_history_new_change_delay = 60
 let g:local_history_max_changes = 20
 let g:local_history_exclude = [ '**/node_modules/**', '*.txt', '**/vendor/**' ]
 let g:airline_powerline_fonts = 1
-
+let g:loaded_netrw = 1
+let g:loaded_netrwPlugin = 1
 let g:python_host_prog = '~/.config/nvim-py/bin/python3'
 let g:python3_host_prog = '~/.config/nvim-py3/bin/python3'
 let g:airline_gui_colors = 1
@@ -254,6 +262,7 @@ Plug 'Pocco81/auto-save.nvim'
 Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'nvim-treesitter/nvim-treesitter-context'
+Plug 'windwp/nvim-ts-autotag'
 Plug 'hedyhli/outline.nvim'
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
@@ -261,12 +270,15 @@ Plug 'hrsh7th/cmp-path'
 Plug 'hrsh7th/cmp-cmdline'
 Plug 'hrsh7th/nvim-cmp'
 Plug 'tzachar/cmp-tabnine', { 'do': './install.sh' }
+Plug 'Joorem/vim-haproxy'
 Plug 'danymat/neogen'
 Plug 'sbdchd/neoformat'
+Plug 'supermaven-inc/supermaven-nvim'
 Plug 'donhardman/assist.nvim'
 
 " file manager
-Plug 'luukvbaal/nnn.nvim'
+Plug 'mikavilpas/yazi.nvim'
+"Plug 'luukvbaal/nnn.nvim'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'tpope/vim-fugitive'
@@ -279,11 +291,8 @@ Plug 'donhardman/nvim-spectre', { 'do': './build.sh' }
 "Plug 'donhardman/eleline.vim'
 Plug 'donhardman/lualine.nvim'
 
-" Folding/unfolding blocks
-Plug 'kevinhwang91/promise-async'
-"Plug 'kevinhwang91/nvim-ufo'
-
 " Extra
+"Plug 'tpope/vim-surround'
 Plug 'itchyny/vim-cursorword'
 Plug 'brenoprata10/nvim-highlight-colors'
 Plug 'preservim/nerdcommenter'
@@ -305,7 +314,10 @@ colorscheme obsidian
 " Initialize custom syntax
 runtime! syntax/rec.vim
 autocmd BufNewFile,BufRead *.rec,*.recb,*.rep set filetype=rec
+autocmd BufNewFile,BufRead *.tpl set filetype=html
 autocmd BufNewFile,BufRead *.ini.tpl set filetype=dosini
+autocmd BufNewFile,BufRead *.cfg set filetype=haproxy
+autocmd BufNewFile,BufRead Dockerfile-* set filetype=dockerfile
 
 " Helper functions
 function! CheckBackspace() abort
@@ -316,7 +328,7 @@ endfunction
 function! SmartClose()
 	" Check if the current buffer is a normal buffer that presumably can be closed with :BufferClose
 	if &buftype == ''
-		execute ':BufferClose'
+		execute 'bp|bd#'
 	else
 		execute ':q'
 	endif
@@ -365,5 +377,33 @@ function! JumpToSequence(sequence, forward)
 		echomsg 'E486: Pattern not found: ' . a:sequence
 		echohl None
 	endif
+endfunction
+
+" Auto open README.md file when it exists on dir open
+augroup OpenReadme
+	autocmd!
+	autocmd VimEnter * call s:OpenReadmeIfExists()
+augroup END
+
+function! s:OpenReadmeIfExists()
+	if argc() == 0
+		return
+	endif
+
+	let l:dir = argv(0)
+	let l:readme_path = l:dir . '/README.md'
+	if filereadable(l:readme_path)
+		execute 'bp|bd#'
+		execute 'edit ' . fnameescape(l:readme_path)
+		return
+	endif
+
+	" Check if the current buffer is empty
+	if empty(bufname('%'))
+		" Close the empty buffer
+		bdelete!
+	endif
+
+	call fzf#vim#files('.', {}, v:true)
 endfunction
 

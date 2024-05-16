@@ -1,4 +1,3 @@
-
 local vim = vim
 require('lualine').setup({
 	options = {
@@ -86,45 +85,39 @@ require('lualine').setup({
 	extensions = {}
 })
 
-local nnn = require("nnn")
-nnn.setup({
-	explorer = {
-		cmd = "NO_COLOR=1 nnn -G -o",
-		width = 24,        -- width of the vertical split
-		side = "topleft",  -- or "botright", location of the explorer window
-		session = "shared",      -- or "global" / "local" / "shared"
-		tabs = false,       -- separate nnn instance per tab
-		fullscreen = false, -- whether to fullscreen explorer window when current tab is empty
-	},
-	picker = {
-		cmd = "nnn -Po",
-		style = { border = "rounded" },
-		session = "shared", -- "global, "local" or "shared"
-		tabs = false,
-	},
-	auto_open = {
-		setup = nil
-	},
-	replace_netrw = "picker",
-	mappings = {
-		--{ "l", nnn.nvim_open_file },
-	},
-	windownav = {
-		left = "<C-h>",
-		right = "<C-l>",
-		next = "<C-w>w",
-		prev = "<C-W>W",
-	},
-	auto_close = true,
-	quitcd = nil,
-	offset = false
-})
-
---local ufo = require("ufo")
---vim.keymap.set('n', 'zR', ufo.openAllFolds)
---vim.keymap.set('n', 'zM', ufo.closeAllFolds)
-
---ufo.setup()
+--local nnn = require("nnn")
+--nnn.setup({
+	--explorer = {
+		--cmd = "NO_COLOR=1 nnn -G -o",
+		--width = 24,        -- width of the vertical split
+		--side = "topleft",  -- or "botright", location of the explorer window
+		--session = "shared",      -- or "global" / "local" / "shared"
+		--tabs = false,       -- separate nnn instance per tab
+		--fullscreen = false, -- whether to fullscreen explorer window when current tab is empty
+	--},
+	--picker = {
+		--cmd = "nnn -Po",
+		--style = { border = "rounded" },
+		--session = "shared", -- "global, "local" or "shared"
+		--tabs = false,
+	--},
+	--auto_open = {
+		--setup = nil
+	--},
+	--replace_netrw = nil,
+	--mappings = {
+		----{ "l", nnn.nvim_open_file },
+	--},
+	--windownav = {
+		--left = "<C-h>",
+		--right = "<C-l>",
+		--next = "<C-w>w",
+		--prev = "<C-W>W",
+	--},
+	--auto_close = true,
+	--quitcd = nil,
+	--offset = false
+--})
 
 require('nvim-highlight-colors').setup({})
 -- This code executes on server in case of remote UI open
@@ -195,6 +188,13 @@ require('nvim-treesitter.configs').setup({
 	highlight = {
 		enable = true,
 	},
+	autotag = {
+		enable = true,
+		filetypes = {
+      'html', 'javascript', 'typescript', 'javascriptreact', 'typescriptreact', 'svelte', 'vue', 'tsx', 'jsx', 'rescript',
+      'css', 'lua', 'xml', 'php', 'markdown'
+    },
+  },
 })
 require('treesitter-context').setup{
 	enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
@@ -215,6 +215,18 @@ require('outline').setup({
 })
 
 require('assist').setup()
+
+require("supermaven-nvim").setup({
+	keymaps = {
+		accept_suggestion = "<C-e>",
+		clear_suggestion = "<C-]>",
+	},
+	ignore_filetypes = { cpp = true },
+	color = {
+		suggestion_color = "#4e5a5f",
+		cterm = 244,
+	}
+})
 
 local completionDelay = 150
 local timer = nil
@@ -264,8 +276,15 @@ cmp.setup({
 		['<C-b>'] = cmp.mapping.scroll_docs(-4),
 		['<C-f>'] = cmp.mapping.scroll_docs(4),
 		['<C-Space>'] = cmp.mapping.complete(),
-		['<C-e>'] = cmp.mapping.confirm({ select = true, behavior = cmp.ConfirmBehavior.Replace }),
-		['<CR>'] = cmp.mapping.confirm({ select = true }),
+		--['<C-e>'] = cmp.mapping.confirm({ select = true, behavior = cmp.ConfirmBehavior.Replace }),
+		--['<CR>'] = cmp.mapping.confirm({ select = true }),
+		-- Remap C-e when we have cmp visible to close it before we execute supermaven completion
+		['<C-e>'] = cmp.mapping(function(fallback)
+			if cmp.visible() then
+				cmp.close()
+			end
+			fallback()
+		end, { 'i', 's' }),
 		['<Tab>'] = cmp.mapping(function(fallback)
 			if cmp.visible() then
 				cmp.select_next_item()
@@ -288,7 +307,7 @@ cmp.setup({
 			{ name = 'buffer' },
 	}),
 	experimental = {
-		ghost_text = true, -- Show ghost text for completion candidates
+		ghost_text = false, -- Show ghost text for completion candidates
 	},
 	view = {
 		entries = {
@@ -345,7 +364,7 @@ require('lspconfig').intelephense.setup({
 					"app/vendor/**",
 					"vendor/**"
 				},
-				phpVersion = "8.3.4"
+				phpVersion = "8.3.7"
 			},
 			enable = true,
 			completion = {
@@ -357,7 +376,7 @@ require('lspconfig').intelephense.setup({
 				enabled = false
 			},
 			phpdoc = {
-				useFullyQualifiedNames = true,
+				useFullyQualifiedNames = false,
 				textFormat = "text"
 			},
 			client = {
@@ -661,5 +680,5 @@ require('lspconfig').stylelint_lsp.setup({
 require('lspconfig').typos_lsp.setup({
 	capabilities = capabilities
 })
---require('lspsaga').setup({})
 
+--require('lspsaga').setup({})
