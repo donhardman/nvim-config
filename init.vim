@@ -4,6 +4,7 @@ set number
 set relativenumber
 set nowrap
 set cc=+1
+set cmdheight=0
 set textwidth=120
 set concealcursor=c
 set conceallevel=2
@@ -24,8 +25,7 @@ set foldlevelstart=99
 set foldenable
 set title
 set titlelen=0
-set titlestring=%{expand(\"%:p\")}
-let &titlestring="nvim " . &titlestring
+set titlestring=%{expand('%:f')}
 set backup
 set backupdir=~/.config/nvim/cache/backup
 set nowritebackup
@@ -37,7 +37,8 @@ set clipboard=unnamedplus
 " Terminal improvements
 tnoremap <C-o> <C-\><C-n>
 
-autocmd BufWinEnter * if &buftype == '' | nnoremap <buffer> <Esc> :noh<CR> | endif
+" We do it in init.lua in autoway now
+"autocmd BufWinEnter * if &buftype == '' | nnoremap <buffer> <Esc> :noh<CR> | endif
 
 " Move in insert mode
 inoremap ∆ <Down>
@@ -102,10 +103,10 @@ inoremap <M-C-H> <Esc>dBxi
 
 " Comments
 " ÷ = <M-/>
-nnoremap ÷ :call nerdcommenter#Comment('n', 'toggle')<CR>
-vnoremap ÷ :call nerdcommenter#Comment('v', 'toggle')<CR>
+nnoremap ÷ <Plug>CommentaryLine<CR>
+vnoremap ÷ <Plug>Commentary<CR>
 
-" Disable space in normal mode
+" Wait for command when we click space
 nnoremap <Space> <Nop>
 
 function! WinZoomToggle() abort
@@ -295,7 +296,8 @@ Plug 'donhardman/lualine.nvim'
 "Plug 'tpope/vim-surround'
 Plug 'itchyny/vim-cursorword'
 Plug 'brenoprata10/nvim-highlight-colors'
-Plug 'preservim/nerdcommenter'
+"Plug 'preservim/nerdcommenter'
+Plug 'tpope/vim-commentary'
 Plug 'dinhhuy258/vim-local-history', {'branch': 'master', 'do': ':UpdateRemotePlugins'}
 Plug 'mistricky/codesnap.nvim', { 'do': 'make' }
 Plug 'michaelb/sniprun', {'do': 'sh ./install.sh'}
@@ -391,16 +393,18 @@ function! s:OpenReadmeIfExists()
 	endif
 
 	let l:path = argv(0)
-	if filereadable(l:path)
+	if !isdirectory(l:path) || filereadable(l:path)
 		execute 'edit ' . fnameescape(l:path)
 		return
 	endif
 
 	let l:dir = l:path
 	let l:readme_path = l:dir . '/README.md'
+
 	if filereadable(l:readme_path)
 		execute 'bp|bd#'
 		execute 'edit ' . fnameescape(l:readme_path)
+		execute 'set filetype=markdown'
 		return
 	endif
 
@@ -410,6 +414,6 @@ function! s:OpenReadmeIfExists()
 		bdelete!
 	endif
 
-	call fzf#vim#files('.', {}, v:true)
+	call fzf#vim#files(l:dir, {}, v:true)
 endfunction
 
