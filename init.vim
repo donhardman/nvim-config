@@ -17,6 +17,7 @@ set tabstop=2
 set hidden
 set nocompatible
 set showtabline=0
+set updatetime=1250
 set foldmethod=expr
 set foldexpr=nvim_treesitter#foldexpr()
 set foldcolumn=1
@@ -50,6 +51,11 @@ nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-h> <C-w>h
 nnoremap <C-l> <C-w>l
+" Close windows from the current position
+nnoremap <Space>xj :wincmd j<CR>:q<CR>:wincmd k<CR>
+nnoremap <Space>xk :wincmd k<CR>:q<CR>:wincmd j<CR>
+nnoremap <Space>xh :wincmd k<CR>:q<CR>:wincmd l<CR>
+nnoremap <Space>xl :wincmd k<CR>:q<CR>:wincmd h<CR>
 
 " Show diagnostics
 nnoremap <silent> <C-.> :lua vim.diagnostic.open_float()<CR>
@@ -89,6 +95,11 @@ function! s:show_documentation()
 	endif
 endfunction
 
+augroup LspHover
+autocmd!
+autocmd CursorHoldI * lua vim.lsp.buf.hover()
+augroup END
+
 " Keep visual mode on ident fixing
 vnoremap > >gv
 vnoremap < <gv
@@ -108,6 +119,9 @@ vnoremap ÷ <Plug>Commentary<CR>
 
 " Wait for command when we click space
 nnoremap <Space> <Nop>
+nnoremap <Space>p <Nop>
+nnoremap <Space>a <Nop>
+nnoremap <Space>x <Nop>
 
 function! WinZoomToggle() abort
 	if ! exists('w:WinZoomIsZoomed')
@@ -127,11 +141,8 @@ function! WinZoomToggle() abort
 endfunction
 
 " Pane control p for panel, s - sidebar, o - open, f - find etc
-"nnoremap <Space>pe :NnnExplorer <C-r>=getcwd()<CR><CR>
 nnoremap <Space>pe :lua require("yazi").yazi(nil, vim.fn.getcwd())<CR>
 nnoremap <Space>pE :lua require("yazi").yazi(nil, vim.api.nvim_buf_get_name(0))<CR>
-"nnoremap <Space>po :NnnPicker <C-r>=getcwd()<CR><CR>
-"nnoremap <Space>pO :NnnPicker <C-r>=expand('%:h:p')<CR><CR>
 nnoremap <Space>po :Files <C-r>=getcwd()<CR><CR>
 nnoremap <Space>pO :Files <C-r>=expand('%:h:p')<CR><CR>
 nnoremap <Space>pv :vsplit<CR>
@@ -153,8 +164,12 @@ nnoremap <Space>pb :Buffers<CR>
 nnoremap <Space>pz :call WinZoomToggle()<CR>
 nnoremap <Space>pt :Outline<CR>
 
+" Assist control, a for assist, a - ask, p - proofread, etc
 nnoremap <leader>a :Assist<space>
 vnoremap <leader>a :Assist<space>
+
+nnoremap <Space>aa :Assist<space>
+vnoremap <Space>aa :Assist<space>
 vnoremap <silent> <Space>ap :Assist Proofread the text, keep all original marks as is without altering, do not change other things than text, keep all unrelated symbols as is<CR>
 
 " Buffer shortcuts
@@ -253,8 +268,6 @@ let g:CtrlSpaceDefaultMappingKey = "<C-space>"
 
 call plug#begin('~/.config/nvim/plugged')
 Plug 'donhardman/vim-obsidian-theme'
-
-" Tabs
 Plug 'nvim-tree/nvim-web-devicons'
 Plug 'lewis6991/gitsigns.nvim'
 Plug 'Pocco81/auto-save.nvim'
@@ -270,7 +283,7 @@ Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-path'
 Plug 'hrsh7th/cmp-cmdline'
 Plug 'hrsh7th/nvim-cmp'
-Plug 'tzachar/cmp-tabnine', { 'do': './install.sh' }
+" Plug 'tzachar/cmp-tabnine', { 'do': './install.sh' }
 Plug 'Joorem/vim-haproxy'
 Plug 'danymat/neogen'
 Plug 'sbdchd/neoformat'

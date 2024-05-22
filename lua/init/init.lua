@@ -163,13 +163,16 @@ require('ibl').setup({
 		show_exact_scope = false,
 		show_start = true,
 		show_end = true,
+		injected_languages = true,
 	},
 })
+
 require('auto-save').setup({
 	enabled = true,
-	trigger_events = {"InsertLeave", "TextChanged"},
+	trigger_events = {"CursorHold", "CursorHoldI", "FocusLost", "InsertLeave"},
 	debounce_delay = 1000,
 })
+
 require('neogen').setup()
 
 require('nvim-treesitter.configs').setup({
@@ -217,15 +220,17 @@ require('outline').setup({
 require('assist').setup()
 
 require("supermaven-nvim").setup({
-	keymaps = {
-		accept_suggestion = "<C-e>",
-		clear_suggestion = "<C-]>",
-	},
-	ignore_filetypes = { cpp = true },
-	color = {
-		suggestion_color = "#4e5a5f",
-		cterm = 244,
-	}
+	-- keymaps = {
+	-- 	accept_suggestion = "<C-e>",
+	-- 	clear_suggestion = "<C-]>",
+	-- },
+	-- ignore_filetypes = { cpp = true },
+	-- color = {
+	-- 	suggestion_color = "#4e5a5f",
+	-- 	cterm = 244,
+	-- },
+	disable_keymaps = true,
+	disable_inline_completion = true,
 })
 
 local completionDelay = 150
@@ -258,7 +263,7 @@ vim.api.nvim_create_autocmd({ "TextChangedI", "CmdlineChanged" }, {
 		)
 	end,
 })
-
+require('snippet').register_cmp_source()
 cmp.setup({
 	completion = {
 		autocomplete = false
@@ -276,38 +281,51 @@ cmp.setup({
 		['<C-b>'] = cmp.mapping.scroll_docs(-4),
 		['<C-f>'] = cmp.mapping.scroll_docs(4),
 		['<C-Space>'] = cmp.mapping.complete(),
-		--['<C-e>'] = cmp.mapping.confirm({ select = true, behavior = cmp.ConfirmBehavior.Replace }),
+		['<C-e>'] = cmp.mapping.confirm({ select = true, behavior = cmp.ConfirmBehavior.Replace }),
 		--['<CR>'] = cmp.mapping.confirm({ select = true }),
 		-- Remap C-e when we have cmp visible to close it before we execute supermaven completion
-		['<C-e>'] = cmp.mapping(function(fallback)
-			if cmp.visible() then
-				cmp.close()
-			end
-			fallback()
-		end, { 'i', 's' }),
+		-- ['<C-e>'] = cmp.mapping(function(fallback)
+		-- 	if cmp.visible() then
+		-- 		cmp.close()
+		-- 	end
+		-- 	fallback()
+		-- end, { 'i', 's' }),
 		['<Tab>'] = cmp.mapping(function(fallback)
-			if cmp.visible() then
-				cmp.select_next_item()
-			else
-				fallback()
-			end
+			vim.schedule(function()
+				if cmp.visible() then
+					cmp.select_next_item()
+				elseif vim.fn.call(vim.fn['vsnip#jumpable'], { 1 }) == 1 then
+					vim.fn.call(vim.fn['vsnip#jump'], { 1 })
+				else
+					fallback()
+				end
+			end)
 		end, { 'i', 's' }),
 		['<S-Tab>'] = cmp.mapping(function(fallback)
-			if cmp.visible() then
-				cmp.select_prev_item()
-			else
-				fallback()
-			end
+			vim.schedule(function()
+				if cmp.visible() then
+					cmp.select_prev_item()
+				elseif vim.snippet.active({ direction = -1 }) then
+					vim.snippet.jump(-1)
+				else
+					fallback()
+				end
+			end)
 		end, { 'i', 's' }),
 	}),
-	sources = cmp.config.sources({
-		{ name = 'cmp_tabnine' },
-		{ name = 'nvim_lsp' },
+	sources = cmp.config.sources(
+		{
+			{ name = 'supermaven' },
+			{ name = 'nvim_lsp' },
+			{ name = 'snp' },
 		}, {
 			{ name = 'buffer' },
-	}),
+		}
+	),
 	experimental = {
-		ghost_text = false, -- Show ghost text for completion candidates
+		ghost_text = {
+			hl_group = 'CmpGhostText'
+		},
 	},
 	view = {
 		entries = {
@@ -690,3 +708,4 @@ vim.api.nvim_create_autocmd('CursorMoved', {
     end
   end
 })
+
