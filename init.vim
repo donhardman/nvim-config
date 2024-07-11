@@ -54,8 +54,8 @@ nnoremap <C-l> <C-w>l
 " Close windows from the current position
 nnoremap <Space>xj :wincmd j<CR>:q<CR>:wincmd k<CR>
 nnoremap <Space>xk :wincmd k<CR>:q<CR>:wincmd j<CR>
-nnoremap <Space>xh :wincmd k<CR>:q<CR>:wincmd l<CR>
-nnoremap <Space>xl :wincmd k<CR>:q<CR>:wincmd h<CR>
+nnoremap <Space>xh :wincmd h<CR>:q<CR>:wincmd l<CR>
+nnoremap <Space>xl :wincmd l<CR>:q<CR>:wincmd h<CR>
 
 " Show diagnostics
 nnoremap <silent> <C-.> :lua vim.diagnostic.open_float()<CR>
@@ -91,13 +91,23 @@ function! s:show_documentation()
 	if (index(['vim','help'], &filetype) >= 0)
 		execute 'h '.expand('<cword>')
 	else
-		lua vim.lsp.buf.hover()
+		call s:show_lsp_doc()
 	endif
 endfunction
 
+function! s:show_lsp_doc()
+	lua << EOF
+	local status, _ = pcall(vim.lsp.buf.hover)
+	if not status then
+		-- Optionally, you can add some debug logging here
+		-- vim.api.nvim_echo({{"No hover information available", "WarningMsg"}}, false, {})
+		end
+EOF
+endfunction
+
 augroup LspHover
-autocmd!
-autocmd CursorHoldI * lua vim.lsp.buf.hover()
+	autocmd!
+	autocmd CursorHoldI * call s:show_lsp_doc()
 augroup END
 
 " Keep visual mode on ident fixing
@@ -173,9 +183,9 @@ vnoremap <Space>aa :Assist<space>
 vnoremap <silent> <Space>ap :Assist Proofread the text, keep all original marks as is without altering, do not change other things than text, keep all unrelated symbols as is<CR>
 
 " Buffer shortcuts
-nnoremap <C-w> :call SmartClose()<CR>
-vnoremap <C-w> :call SmartClose()<CR>
-inoremap <C-w> <Esc>:call SmartClose()<CR>
+nnoremap <C-w> :bd<CR>
+vnoremap <C-w> :bd<CR>
+inoremap <C-w> <Esc>:bd<CR>
 
 nnoremap <C-n> :bnext<CR>
 nnoremap <C-p> :bprev<CR>
@@ -338,15 +348,6 @@ autocmd BufNewFile,BufRead Dockerfile-* set filetype=dockerfile
 function! CheckBackspace() abort
 	let col = col('.') - 1
 	return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
-
-function! SmartClose()
-	" Check if the current buffer is a normal buffer that presumably can be closed with :BufferClose
-	if &buftype == ''
-		execute 'bp|bd#'
-	else
-		execute ':q'
-	endif
 endfunction
 
 " Check if the current window is a floating window

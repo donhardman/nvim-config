@@ -215,6 +215,12 @@ require('treesitter-context').setup{
 }
 
 require('outline').setup({
+	outline_window = {
+		width = 20,
+		position = "left",
+		show_cursorline = true,
+		hide_cursor = false,
+	},
 })
 
 require('assist').setup()
