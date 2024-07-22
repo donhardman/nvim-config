@@ -183,6 +183,8 @@ vnoremap <Space>aa :Assist<space>
 vnoremap <silent> <Space>ap :Assist Proofread the text, keep all original marks as is without altering, do not change other things than text, keep all unrelated symbols as is<CR>
 
 " Buffer shortcuts
+nunmap <C-W>d
+nunmap <C-W><C-D>
 nnoremap <C-w> :bd<CR>
 vnoremap <C-w> :bd<CR>
 inoremap <C-w> <Esc>:bd<CR>
@@ -373,8 +375,15 @@ function! MaybeRemapEscForFloatingWindow()
 	endif
 endfunction
 
+function! RemapEnterForCommandLineWindow()
+	nunmap <buffer> <Enter>
+	nunmap <buffer> <BS>
+endfunction
+
 autocmd BufWinEnter * call MaybeRemapEnterForBuffer()
 autocmd BufWinEnter * call MaybeRemapEscForFloatingWindow()
+autocmd CmdwinEnter * call RemapEnterForCommandLineWindow()
+
 
 function! JumpToSequence(sequence, forward)
 	if a:forward == ''
