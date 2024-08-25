@@ -2,7 +2,19 @@ let s:init_vim_path = expand('<sfile>:p:h')
 
 set number
 set relativenumber
-set nowrap
+" set nowrap
+set wrap
+set linebreak
+set showbreak=↪\  " The symbol to show at the start of wrapped lines
+set breakindent   " Preserve indentation in wrapped text
+set breakindentopt=shift:2  " Shift wrapped lines by 2 spaces
+set textwidth=0
+set wrapmargin=0
+set formatoptions-=t
+set formatoptions-=c
+set formatoptions-=r
+set formatoptions-=o
+set formatoptions-=a
 set cc=+1
 set cmdheight=0
 set textwidth=120
@@ -118,9 +130,13 @@ vnoremap < <gv
 inoremap <C-x> <C-o>x
 inoremap <C-a> <C-o>^
 inoremap <C-e> <C-o>$
-inoremap <C-u> <Esc>d^xi
-inoremap <C-k> <C-o>d$
+inoremap <C-u> <Esc>"_d^xi
+inoremap <C-k> <C-o>"_d$
 inoremap <M-C-H> <Esc>dBxi
+
+" Movements by words forward and backwards in insert mode
+inoremap <C-h> <C-o>b
+inoremap <C-l> <Esc>ea
 
 " Comments
 " ÷ = <M-/>
