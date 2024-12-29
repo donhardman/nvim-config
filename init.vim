@@ -1,9 +1,13 @@
 let s:init_vim_path = expand('<sfile>:p:h')
 
-source /Users/dk/.config/nvim/vim/settings.vim
-source /Users/dk/.config/nvim/vim/plugins.vim
-source /Users/dk/.config/nvim/vim/functions.vim
-source /Users/dk/.config/nvim/vim/mappings.vim
-source /Users/dk/.config/nvim/vim/autocommands.vim
+let s:vim_config_path = s:init_vim_path . '/vim'
+
+execute 'source ' . s:vim_config_path . '/settings.vim'
+execute 'source ' . s:vim_config_path . '/plugins.vim'
+execute 'source ' . s:vim_config_path . '/functions.vim'
+execute 'source ' . s:vim_config_path . '/mappings.vim'
+execute 'source ' . s:vim_config_path . '/autocommands.vim'
+execute 'source ' . s:vim_config_path . '/commands.vim'
 
 colorscheme obsidian
+

@@ -107,7 +107,7 @@ vnoremap <leader>a :Assist<space>
 
 nnoremap <Space>aa :Assist<space>
 vnoremap <Space>aa :Assist<space>
-vnoremap <silent> <Space>ap :Assist Proofread the text, keep all original marks as is without altering, do not change other things than text, keep all unrelated symbols as is<CR>
+vnoremap <silent> <Space>ap :Assist You are proofreader, use input AS TEXT TO PROOFREAD, make it sounds like a native speaker in the way like AI will never do. Respond exactly with fixed text without any explanation. Keep all original marks as is do not remove any marks, do not change other things than text, keep all unrelated symbols as is<CR>
 
 " Buffer shortcuts
 nunmap <C-W>d

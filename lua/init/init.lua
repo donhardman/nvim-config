@@ -715,3 +715,5 @@ vim.api.nvim_create_autocmd('CursorMoved', {
   end
 })
 
+require('php-helpers');
+
