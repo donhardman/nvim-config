@@ -183,7 +183,7 @@ require('nvim-treesitter.configs').setup({
 		'html', 'python', 'toml', 'yaml', 'sql',
 		'markdown', 'make', 'perl', 'graphql', 'gitcommit',
 		'gitignore', 'diff', 'dart', 'csv', 'tmux', 'xml',
-		'swift', 'scala', 'elixir', 'solidity', 'proto',
+		'swift', 'scala', 'elixir', 'solidity', 'proto', 'svelte',
 	},
 	indent = {
 		enable = true,
@@ -287,7 +287,13 @@ cmp.setup({
 		['<C-b>'] = cmp.mapping.scroll_docs(-4),
 		['<C-f>'] = cmp.mapping.scroll_docs(4),
 		['<C-Space>'] = cmp.mapping.complete(),
-		['<C-e>'] = cmp.mapping.confirm({ select = true, behavior = cmp.ConfirmBehavior.Replace }),
+		['<C-e>'] = cmp.mapping(function(fallback)
+			if cmp.visible() then
+				cmp.confirm({ select = true, behavior = cmp.ConfirmBehavior.Replace })
+			else
+				fallback()
+			end
+		end),
 		--['<CR>'] = cmp.mapping.confirm({ select = true }),
 		-- Remap C-e when we have cmp visible to close it before we execute supermaven completion
 		-- ['<C-e>'] = cmp.mapping(function(fallback)
@@ -388,7 +394,7 @@ require('lspconfig').intelephense.setup({
 					"app/vendor/**",
 					"vendor/**"
 				},
-				phpVersion = "8.3.7"
+				phpVersion = "8.4.4"
 			},
 			enable = true,
 			completion = {
@@ -433,6 +439,8 @@ require('lspconfig').intelephense.setup({
 				"dio",
 				"dom",
 				"ds",
+				"simdjson",
+				"trader",
 				"eio",
 				"elastic_apm",
 				"enchant",
@@ -707,12 +715,12 @@ require('lspconfig').typos_lsp.setup({
 
 -- Auto clear hlsearch when cursor moves
 vim.api.nvim_create_autocmd('CursorMoved', {
-  group = vim.api.nvim_create_augroup('auto-hlsearch', { clear = true }),
-  callback = function ()
-    if vim.v.hlsearch == 1 and vim.fn.searchcount().exact_match == 0 then
-      vim.schedule(function () vim.cmd.nohlsearch() end)
-    end
-  end
+	group = vim.api.nvim_create_augroup('auto-hlsearch', { clear = true }),
+	callback = function ()
+		if vim.v.hlsearch == 1 and vim.fn.searchcount().exact_match == 0 then
+			vim.schedule(function () vim.cmd.nohlsearch() end)
+		end
+	end
 })
 
 require('php-helpers');

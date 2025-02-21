@@ -1,5 +1,7 @@
 set number
 set relativenumber
+" We do not need swap cuz we use autosave
+set noswapfile
 " set nowrap
 set wrap
 set linebreak

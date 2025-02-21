@@ -2,11 +2,11 @@ function! ShowDocumentation()
 	if (index(['vim','help'], &filetype) >= 0)
 		execute 'h '.expand('<cword>')
 	else
-		call s:show_lsp_doc()
+		call ShowLspDoc()
 	endif
 endfunction
 
-function! s:show_lsp_doc()
+function! ShowLspDoc()
 	lua << EOF
 	local status, _ = pcall(vim.lsp.buf.hover)
 	if not status then

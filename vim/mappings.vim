@@ -4,16 +4,21 @@ tnoremap <C-o> <C-\><C-n>
 " We do it in init.lua in autoway now
 "autocmd BufWinEnter * if &buftype == '' | nnoremap <buffer> <Esc> :noh<CR> | endif
 
+" Run command in visual mode and replace it with output
+xnoremap ! :s/\%V.*\%V./\=system(input('Command: ', '', 'shellcmd'))/g<CR>
+
 " Move in insert mode
 inoremap ∆ <Down>
 inoremap ˚ <Up>
 inoremap ˙ <Left>
 inoremap ¬ <Right>
+"
 " Move between windows
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-h> <C-w>h
 nnoremap <C-l> <C-w>l
+
 " Close windows from the current position
 nnoremap <Space>xj :wincmd j<CR>:q<CR>:wincmd k<CR>
 nnoremap <Space>xk :wincmd k<CR>:q<CR>:wincmd j<CR>
@@ -46,6 +51,7 @@ nnoremap <silent> gn :lua vim.diagnostic.goto_next()<CR>
 " Configure GitGutter
 nnoremap gh <Plug>(GitGutterNextHunk)
 nnoremap gH <Plug>(GitGutterPrevHunk)
+nnoremap dh <Plug>(GitGutterUndoHunk)
 
 " Use K to either doHover or show documentation in preview window
 nnoremap <silent> K :call ShowDocumentation()<CR>

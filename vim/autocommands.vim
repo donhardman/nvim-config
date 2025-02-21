@@ -1,6 +1,6 @@
 augroup LspHover
 	autocmd!
-	autocmd CursorHoldI * call show_lsp_doc()
+	autocmd CursorHoldI * silent! call ShowLspDoc()
 augroup END
 
 " Initialize custom syntax
