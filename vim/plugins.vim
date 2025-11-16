@@ -40,6 +40,7 @@ Plug 'danymat/neogen'
 Plug 'sbdchd/neoformat'
 Plug 'supermaven-inc/supermaven-nvim'
 Plug 'donhardman/assist.nvim'
+Plug 'Muvon/octocode.nvim'
 
 " file manager
 Plug 'mikavilpas/yazi.nvim'
@@ -71,6 +72,15 @@ Plug 'lukas-reineke/indent-blankline.nvim'
 "Plug 'junegunn/vim-slash'
 Plug 'airblade/vim-gitgutter'
 Plug 'dstein64/vim-startuptime'
+Plug 'MeanderingProgrammer/render-markdown.nvim'
+
+" Deps
+" Plug 'stevearc/dressing.nvim'
+" Plug 'MunifTanjim/nui.nvim'
+" Plug 'HakonHarnes/img-clip.nvim'
+" Plug 'zbirenbaum/copilot.lua'
+" Plug 'yetone/avante.nvim', { 'branch': 'main', 'do': 'make' }
+
 call plug#end()
 
 lua require('init')

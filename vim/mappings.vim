@@ -49,9 +49,9 @@ nnoremap <silent> gN :lua vim.diagnostic.goto_prev()<CR>
 nnoremap <silent> gn :lua vim.diagnostic.goto_next()<CR>
 
 " Configure GitGutter
-nnoremap gh <Plug>(GitGutterNextHunk)
-nnoremap gH <Plug>(GitGutterPrevHunk)
-nnoremap dh <Plug>(GitGutterUndoHunk)
+nnoremap <silent> gh <Plug>(GitGutterNextHunk)
+nnoremap <silent> gH <Plug>(GitGutterPrevHunk)
+nnoremap <silent> dh <Plug>(GitGutterUndoHunk)
 
 " Use K to either doHover or show documentation in preview window
 nnoremap <silent> K :call ShowDocumentation()<CR>
@@ -84,28 +84,29 @@ nnoremap <Space>a <Nop>
 nnoremap <Space>x <Nop>
 
 " Pane control p for panel, s - sidebar, o - open, f - find etc
-nnoremap <Space>pe :lua require("yazi").yazi(nil, vim.fn.getcwd())<CR>
-nnoremap <Space>pE :lua require("yazi").yazi(nil, vim.api.nvim_buf_get_name(0))<CR>
-nnoremap <Space>po :Files <C-r>=getcwd()<CR><CR>
-nnoremap <Space>pO :Files <C-r>=expand('%:h:p')<CR><CR>
-nnoremap <Space>pv :vsplit<CR>
-nnoremap <Space>pV :Gvdiffsplit<CR>
-nnoremap <Space>ph :split<CR>
-nnoremap <Space>pH :Ghdiffsplit<CR>
-nnoremap <Space>pq :q<CR>
-nnoremap <Space>pQ :qa<CR>
-nnoremap <Space>pl :BLines<CR>
-nnoremap <Space>pL :Lines<CR>
-nnoremap <Space>pf :Spectre<CR>
-nnoremap <Space>pF :RG<CR>
-nnoremap <C-/> :Spectre<CR>
-nnoremap <Space>ps :w<CR>
-nnoremap <Space>pS :wa<CR>
-nnoremap <Space>pj :Jumps<CR>
-nnoremap <Space>pJ :Marks<CR>
-nnoremap <Space>pb :Buffers<CR>
-nnoremap <Space>pz :call WinZoomToggle()<CR>
-nnoremap <Space>pt :Outline<CR>
+nnoremap <silent> <Space>pe :lua require("yazi").yazi(nil, vim.fn.getcwd())<CR>
+nnoremap <silent> <Space>pE :lua require("yazi").yazi(nil, vim.api.nvim_buf_get_name(0))<CR>
+nnoremap <silent> <Space>po :Files <C-r>=getcwd()<CR><CR>
+nnoremap <silent> <Space>pO :Files <C-r>=expand('%:h:p')<CR><CR>
+nnoremap <silent> <Space>pv :vsplit<CR>
+nnoremap <silent> <Space>pV :Gvdiffsplit<CR>
+nnoremap <silent> <Space>ph :split<CR>
+nnoremap <silent> <Space>pH :Ghdiffsplit<CR>
+nnoremap <silent> <Space>pq :q<CR>
+nnoremap <silent> <Space>pQ :qa<CR>
+nnoremap <silent> <Space>pl :BLines<CR>
+nnoremap <silent> <Space>pL :Lines<CR>
+nnoremap <silent> <Space>pf :Spectre<CR>
+nnoremap <silent> <Space>pF :RG<CR>
+nnoremap <silent> <C-/> :Spectre<CR>
+nnoremap <silent> <C-\> :Octocode<CR>
+nnoremap <silent> <Space>ps :w<CR>
+nnoremap <silent> <Space>pS :wa<CR>
+nnoremap <silent> <Space>pj :Jumps<CR>
+nnoremap <silent> <Space>pJ :Marks<CR>
+nnoremap <silent> <Space>pb :Buffers<CR>
+nnoremap <silent> <Space>pz :call WinZoomToggle()<CR>
+nnoremap <silent> <Space>pt :Outline<CR>
 
 " Assist control, a for assist, a - ask, p - proofread, etc
 nnoremap <leader>a :Assist<space>
@@ -134,8 +135,8 @@ inoremap <C-v> <esc>"+pA
 inoremap <C-CR> <C-o>o
 inoremap <C-z> <C-o>u
 nnoremap <S-e> ea
-nmap ga <Plug>(EasyAlign)
-xmap ga <Plug>(EasyAlign)
+nmap <silent> ga <Plug>(EasyAlign)
+xmap <silent> ga <Plug>(EasyAlign)
 
 " Bash-like keybindings for command line
 cnoremap <C-a> <Home>

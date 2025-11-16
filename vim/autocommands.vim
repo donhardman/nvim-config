@@ -24,3 +24,5 @@ augroup OpenReadme
 	autocmd!
 	autocmd VimEnter * call OpenReadmeIfExists()
 augroup END
+
+autocmd FileType php setlocal indentexpr=
